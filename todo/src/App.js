@@ -1,47 +1,17 @@
 import React, { Component } from "react";
 import "./App.css";
 import TodoList from "./components/TodoList";
-import uuid from "uuid/v1";
+import { connect } from "react-redux";
+import * as actionCreators from "./store/actions/actionTypes";
 class App extends Component {
-  state = {
-    todo: [
-      {
-        value: "Walk the dog.",
-        completed: false,
-        id: 1
-      }
-    ]
-  };
-  editFormHandler = event => {
-    event.preventDefault();
-    let newEntry = {
-      value: event.target[0].value,
-      completed: false,
-      id: uuid()
-    };
-    event.target.reset();
-    this.setState(prevState => ({
-      todo: [...prevState.todo, newEntry]
-    }));
-  };
-  completedHandler = id => {
-    this.setState(prevState => ({
-      todo: prevState.todo.map(elem => {
-        if (elem.id === id) {
-          elem.completed = !elem.completed;
-        }
-        return elem
-      })
-    }));
-  };
   render() {
     return (
       <div className="App">
         <div>
-          <TodoList data={this.state.todo} completed={this.completedHandler} />
+          <TodoList />
         </div>
         <div>
-          <form action="" onSubmit={this.editFormHandler}>
+          <form action="" onSubmit={this.props.onAddTodo}>
             <input type="text" />
             <button>Submit</button>
           </form>
@@ -50,5 +20,18 @@ class App extends Component {
     );
   }
 }
+const mapStateToProps = state => {
+  return {
+    todoArray: state.todo
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    onAddTodo: event => dispatch(actionCreators.add(event))
+  };
+};
 
-export default App;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
